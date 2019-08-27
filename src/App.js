@@ -1,7 +1,15 @@
 import React, {Component} from 'react';
 import './App.css';
 
-import WeatherLocation from './components/WeatherLocation';
+import LocationList from './components/LocationList/index';
+
+const cities = [
+    'Tlaquepaque,mx',
+    'Chicago,us',
+    'Guadalajara,mx',
+    'Ciudad de México, mx',
+    'Bogota,col'
+];
 
 
 
@@ -12,7 +20,7 @@ class App extends Component {
 
             <div className="App">
 
-            <WeatherLocation></WeatherLocation>
+                <LocationList cities={cities} />
 
             </div>
 

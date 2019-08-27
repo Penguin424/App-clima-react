@@ -1,54 +1,57 @@
 import React, {Component} from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Location from './Location';
 import WeatherData from './WeatherData';
-import { SUN, WINDY } from './../../constans/constans.clima';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import './style.css';
 
-
-const data1 = {
-    tempeture: 5,
-    weatherState: SUN,
-    humidity: 10,
-    wind: '10 m/s'
-}
-
-const data2 = {
-    tempeture: 10,
-    weatherState: WINDY,
-    humidity: 2,
-    wind: '20 m/s'
-}
-
+import  getWeatherServiceForName  from '../../services/axios.get.component'
 
 class WeatherLocation extends Component{
 
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
+
+        const {city} = props
 
         this.state = {
-            city: 'Tlaquepaque',
-            data: data1
+            city: city,
+            data: null
         }
 
     }
 
-    handleUpdateClick = () => {
-        console.log('click');
+    componentDidMount = async() => {
+        this.handleUpdateClick();
+        console.log()
+    }    
+    
 
-        if(this.state.city === 'Tlaquepaque'){
-            this.setState({
-                city: 'Guadalajara',
-                data: data2
-            });
-        } else {
+    handleUpdateClick = async() => {
+        let promise = await axios.get(getWeatherServiceForName(this.props.city));
+        let data = await promise.data;
+ 
+        let weatherRes = {
+            city: this.props.city,
+            data: {
+                weatherState: data.weather[0].main,
+                wind: data.wind.speed,
+                humidity: data.main.humidity,
+                tempeture: data.main.temp,
+                iconId: data.weather[0].id
+            }
 
-        this.setState({
-            city: 'Tlaquepaque',
-            data: data1
-        });
         }
 
+
+        this.setState({
+            city: weatherRes.city,
+            data: weatherRes.data
+        })
+
+        return console.log(weatherRes)
 
     }
 
@@ -59,8 +62,7 @@ class WeatherLocation extends Component{
         return(
             <div className="weatherLocationCont">
                 <Location city={city}></Location>
-                <WeatherData data={data} ></WeatherData>
-                <button onClick={this.handleUpdateClick} >Actualizar</button>
+                {data ? <WeatherData data={data} ></WeatherData> : <CircularProgress />}
             </div>
         );
 
@@ -68,7 +70,9 @@ class WeatherLocation extends Component{
 
 }
 
-
+WeatherLocation.propType = {
+    city: PropTypes.string.isRequired,
+}
 
 
 
